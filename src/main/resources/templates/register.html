@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MyZone</title>
+  <link rel="stylesheet" href="/layui/css/login.css">
+  <link rel="stylesheet" href="/layui/css/layui.css">
+
+  <script src="/layui/js/jquery-3.4.1.min.js"></script>
+  <script src="/layui/layui.js"></script>
+
+
+</head>
+<body>
+<div class="box1">
+  <h1>注册</h1>
+  <form action="/signup" method="post">
+    <div class="inputbox">
+      <input type="text"  id="name" name="name">
+      <label>昵称</label>
+    </div>
+    <div class="inputbox">
+      <input type="text"  id="mail" name="mail">
+      <label>邮箱</label>
+    </div>
+    <div class="inputbox">
+      <input type="password"  id="password" name="password">
+      <label>密码</label>
+    </div>
+    <div class="inputbox">
+      <input type="text"  id="vcode" name="vcode">
+      <button id="sendCheckCode" type="button" class="layui-btn layui-btn-normal">获取邮箱验证码</button>
+      <p2 th:if="${errormsg != null}" th:text="${errormsg}" style="color:red;"></p2>
+      <label>邮箱验证码</label>
+    </div>
+    <input type="submit" value="注册" style="float: right">
+  </form>
+
+  <div style="padding-top: 20px">
+    <p5 style="color: aliceblue;">已有账号。</p5>
+    <a href="login" style="color:dodgerblue;">登录</a>
+  </div>
+</div>
+</body>
+<script type="text/javascript">
+
+layui.use("form",function () {
+    var form = layui.form;
+    var $ = layui.$;
+    //验证码
+    var checkCode = "";
+
+    //发送验证码
+    $("#sendCheckCode").click(function () {
+        var mail = $("#mail").val();
+        var name = $("#name").val();
+
+        var password = $("#password").val();
+        if (mail == null || mail == "") {
+            layer.msg("请输入邮箱");
+            return;
+        }
+        if (name == null || name == "") {
+            layer.msg("请输入昵称");
+            return;
+        }
+        if (password == null || password == "") {
+            layer.msg("请输入密码");
+            return;
+        }
+        var index = layer.open({
+            type: 3,
+            content: "<B style='color:white;'>发送中</B>"
+        });
+        $.ajax({
+            url: "/getCheckCode?email=" + mail,
+            type: "post",
+            success: function (text) {
+                if (text != null && text != "") {
+                    layer.close(index);
+                    layer.msg("已发送");
+                    checkCode = text;
+                    countDown();
+                } else {
+                    layer.alert("发送失败，请重新获取");
+                    layer.close(index);
+                }
+            }
+        });
+
+        var maxTime = 60;
+        function countDown(){
+            if (maxTime == 0){
+                checkCode = "";
+                $("#sendCheckCode").removeClass("layui-btn-disabled");
+                $("#sendCheckCode").removeAttr("disabled")
+                $("#sendCheckCode").html("获取验证码");
+                maxTime = 60;
+            }else{
+                $("#sendCheckCode").attr("disabled","disabled");
+                $("#sendCheckCode").addClass("layui-btn-disabled");
+                form.render();
+                $("#sendCheckCode").html(maxTime+"秒后重新获取");
+                maxTime--;
+                setTimeout(countDown,1000);
+            }
+        }
+
+    })
+});
+</script>
+</html>
