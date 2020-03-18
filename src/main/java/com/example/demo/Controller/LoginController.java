@@ -1,6 +1,8 @@
 package com.example.demo.Controller;
 
 import com.example.demo.Entity.User;
+import com.example.demo.Entity.UserDetail;
+import com.example.demo.Mapper.UserDetailMapper;
 import com.example.demo.Mapper.UserMapper;
 import com.example.demo.Service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +10,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Random;
 
 
@@ -17,6 +22,8 @@ public class LoginController {
 
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private UserDetailMapper userDetailMapper;
     @Autowired
     private MailService mailService;
 
@@ -44,7 +51,12 @@ public class LoginController {
             user.setUsername(name);
             user.setPassword(bCryptPasswordEncoder.encode(password));
             user.setEmail(mail);
+            UserDetail userDetail = new UserDetail();
+            userDetail.setNickName(name);
+            userDetail.setEmail(mail);
+            userDetail.setHeadPic("/layui/images/login.jpg"); //设置一个默认的头像
             userMapper.insert(user);
+            userDetailMapper.insert(userDetail);
             return "login";
         }else{
             model.addAttribute("errormsg","验证码错误");
@@ -55,6 +67,7 @@ public class LoginController {
     @PostMapping("/signin")
     public String signin(@RequestParam(name="email") String email,
                        @RequestParam(name= "password") String password,
+                       HttpServletRequest request,
                        Model model){
         User user = userMapper.getUserlist(email);
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
@@ -62,7 +75,8 @@ public class LoginController {
             model.addAttribute("errormsg","该用户未注册！");
         }
         else if(bCryptPasswordEncoder.matches(password,user.getPassword())){
-            return "index";
+            request.getSession().setAttribute("user",user);
+            return "redirect:/";
         }else{
             model.addAttribute("errormsg","邮箱或密码错误！");
         }
@@ -89,5 +103,9 @@ public class LoginController {
         return checkCode;
     }
 
-
+    @RequestMapping("/logout")
+    public String logout(HttpServletRequest request, HttpServletResponse response){
+        request.getSession().removeAttribute("user");
+        return "login";
+    }
 }
