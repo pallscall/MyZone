@@ -6,9 +6,11 @@
   <link rel="stylesheet" href="/layui/css/layui.css">
   <link rel="stylesheet" href="/layui/css/userdetails.css">
   <link rel="stylesheet" href="/bootstrap/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/mycss.css">
   <script src="/layui/js/jquery-3.4.1.min.js"></script>
   <script src="/layui/layui.js"></script>
   <script src="/bootstrap/js/bootstrap.js"></script>
+  <script src="/js/details.js"></script>
 
 
 </head>
@@ -27,18 +29,18 @@
       <hr class="layui-col-md9">
       <div class="header layui-col-md9">
 <!--        <input type="hidden" id="picPath" value="${user.picPath}" />-->
-        <img th:src="${userDetail.getHeadPic()}" class="head">
-        <p class="modify">修改头像</p>
+        <img th:src="${userDetail.getHeadPic()}" class="head"><br/>
+        <h3 class="modify">修改头像</h3>
       </div>
       <div class="layui-col-md9 right_c">
         <ul class="self">
-          <li>昵称: <span th:text="${userDetail.getNickName()}"></span></li>
-          <li>实名: <span th:if="${userDetail.getName() != null}" th:text="${userDetail.getNickName()}"></span></li>
-          <li>性别: <span th:if="${userDetail.getSex() != null}" th:text="${userDetail.getSex()}"></span></li>
-          <li>生日: <span th:if="${userDetail.getBirth() != null}" th:text="${userDetail.getBirth()}"></span></li>
+          <li>昵称：<span th:text="${userDetail.getNickName()}"></span></li>
+          <li>实名：<span th:text="${userDetail.getName()}"></span></li>
+          <li>性别：<span th:text="${userDetail.getSex()}"></span></li>
+          <li>生日：<span th:text="${userDetail.getBirth()}"></span></li>
           <li>邮箱：<span  th:text="${userDetail.getEmail()}"></span></li>
           <li>
-            <span>简介：<span th:if="${userDetail.getName() != null}" th:text="${userDetail.getNickName()}"></span></span>
+            <span>简介：<span th:text="${userDetail.getResume()}"></span></span>
           </li>
         </ul>
       </div>
@@ -46,7 +48,7 @@
   </div>
 </div>
 <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal" style="margin-left: 550px; margin-top: 30px">
   修改信息
 </button>
 
@@ -56,15 +58,23 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+        <h4 class="modal-title" id="myModalLabel">个人资料</h4>
       </div>
-      <div class="modal-body">
-        ...
-      </div>
+      <form id="form">
+        <div class="modal-body">
+          <div><span>昵称: </span><input  th:value="${userDetail.getNickName()}" id="nickName" name="nickName"><br/></div>
+          <div><span>实名: </span><input  th:value="${userDetail.getName()}" id="name" name="name"><br/></div>
+          <div><span>性别: </span><input  th:value="${userDetail.getSex()}" id="sex" name="sex"><br/></div>
+          <div><span>生日: </span><input  th:value="${userDetail.getBirth()}" id="birth" name="birth"><br/></div>
+          <div><span>邮箱: </span><input  th:value="${userDetail.getEmail()}" id="email" name="email"><br/></div>
+          <div><span>简介: </span><input  th:value="${userDetail.getResume()}" id="resume" name="resume"><br/></div>
+        </div>
+
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button type="button" class="btn btn-primary" id="submit">保存修改</button>
       </div>
+      </form>
     </div>
   </div>
 </div>

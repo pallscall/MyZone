@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.Random;
 
 
@@ -55,6 +56,10 @@ public class LoginController {
             userDetail.setNickName(name);
             userDetail.setEmail(mail);
             userDetail.setHeadPic("/layui/images/login.jpg"); //设置一个默认的头像
+            userDetail.setName(" ");
+            userDetail.setSex(" ");
+            userDetail.setBirth(" ");
+            userDetail.setResume(" ");
             userMapper.insert(user);
             userDetailMapper.insert(userDetail);
             return "login";
@@ -67,7 +72,7 @@ public class LoginController {
     @PostMapping("/signin")
     public String signin(@RequestParam(name="email") String email,
                        @RequestParam(name= "password") String password,
-                       HttpServletRequest request,
+                       HttpSession session,
                        Model model){
         User user = userMapper.getUserlist(email);
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
@@ -75,7 +80,7 @@ public class LoginController {
             model.addAttribute("errormsg","该用户未注册！");
         }
         else if(bCryptPasswordEncoder.matches(password,user.getPassword())){
-            request.getSession().setAttribute("user",user);
+            session.setAttribute("user",user);
             return "redirect:/";
         }else{
             model.addAttribute("errormsg","邮箱或密码错误！");

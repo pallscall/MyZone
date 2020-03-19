@@ -1,0 +1,13 @@
+.modal-body span{
+    font-size: 20px;
+}
+
+.modal-body input{
+    width: 300px;
+    height: 30px;
+}
+
+.modal-body div{
+    margin-top: 10px;
+    margin-left: 83px;
+}
